@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
+    "start:dev": "nodemon --watch src --exec babel-node src/index.js",
     "build": "babel src --out-dir dist --copy-files",
     "test": "mocha --require babel-register"
   },
@@ -17,6 +18,7 @@
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
+    "nodemon": "^1.12.1",
     "sinon": "^4.1.1"
   }
 }
