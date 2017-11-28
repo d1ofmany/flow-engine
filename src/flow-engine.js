@@ -44,7 +44,7 @@ const flowEngine = (rules, object, executedRules) => {
   }
   
   if (ruleNext) {
-    executedRules = executedRules.concat(ruleNext);
+    executedRules = [...executedRules, ruleNext];
     return flowEngine(rules, object, executedRules);
   } else {
     console.log("End!".blue);
