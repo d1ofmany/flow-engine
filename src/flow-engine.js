@@ -5,7 +5,7 @@ const findRule = (rule, type) => item => item.id === rule[type];
 const evalRule = (rule, object) => {
   let ruleFunction;
   try {
-    ruleFunction = eval("(" + rule.rule + ")");
+    ruleFunction = new Function("return (" + rule.rule + ");")();
     return ruleFunction(object);
   } catch (e) {
     console.log((rule.title + " error: " + e).red);
@@ -13,18 +13,14 @@ const evalRule = (rule, object) => {
   }
 };
 
-const flowEngine = (rules, object, accumulator) => {
-  if (!accumulator) {
+const flowEngine = (rules, object, executedRules) => {
+  if (!executedRules) {
     return flowEngine(rules, object, [rules[0]]);
   }
   
-  const rule = accumulator[accumulator.length -1];
+  const rule = executedRules[executedRules.length -1];
   
-  const findCircular = findRule(rule, "id");
-  const findNextTrue = findRule(rule, "true_id");
-  const findNextFalse = findRule(rule, "false_id");
-  
-  var circular = accumulator.slice(0, accumulator.length - 1).find(findCircular);
+  var circular = executedRules.slice(0, executedRules.length - 1).find(findRule(rule, "id"));
   
   if (circular) {
     console.log("End!".blue);
@@ -42,14 +38,14 @@ const flowEngine = (rules, object, accumulator) => {
   let ruleNext;
   
   if (ruleResult && rule.true_id) {
-    ruleNext = rules.find(findNextTrue);
+    ruleNext = rules.find(findRule(rule, "true_id"));
   } else if (!ruleResult && rule.false_id) {
-    ruleNext = rules.find(findNextFalse);
+    ruleNext = rules.find(findRule(rule, "false_id"));
   }
   
   if (ruleNext) {
-    accumulator = accumulator.concat(ruleNext);
-    return flowEngine(rules, object, accumulator);
+    executedRules = executedRules.concat(ruleNext);
+    return flowEngine(rules, object, executedRules);
   } else {
     console.log("End!".blue);
     return;
